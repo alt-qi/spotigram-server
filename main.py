@@ -1,9 +1,31 @@
 from bottle import route, run, response, request
-from os import getenv
 from utils import *
 import telebot
+import os
 
-bot = telebot.TeleBot(getenv("bot_token"))
+if not ".env" in os.listdir():
+    with open(".env", "w+") as file:
+        file.write(
+'''
+# Telegram bot token
+bot_token = "INSERT YOUR BOT TOKEN HERE"
+
+# Database creditionals 
+database = "INSERT DATABASE NAME HERE"
+user = "INSERT DATABASE USER NAME HERE",
+password = "INSERT DATABASE USER PASSWORD HERE",
+port = "INSERT DATABASE PORT HERE"
+
+# Server settings
+host = "localhost"
+port = 8080
+''')
+        file.close()
+        
+    print("I have created a \".env\" file, please fill required fields in it.")
+    exit()
+
+bot = telebot.TeleBot(os.getenv("bot_token"))
 
 @route('/auth', method="GET")
 def auth():
@@ -17,4 +39,4 @@ def auth():
         db.delete_code(request.query["state"])
         return "Authentication successful."
 
-run(host='localhost', port=8080, debug=True)
+run(host=os.getenv("srv_host"), port=os.getenv("srv_port"))
