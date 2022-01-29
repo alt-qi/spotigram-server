@@ -30,4 +30,4 @@ def delete_code(code: int) -> None:
 
 def get_user_id(code: int) -> int:
     cur.execute("SELECT user_id FROM auth WHERE code = %s", (code,))
-    return int(cur.fetchall())
+    return int(cur.fetchall()[0][0])

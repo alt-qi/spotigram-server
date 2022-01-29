@@ -35,7 +35,7 @@ def auth():
     elif not db.code_exists(request.query["state"]):
         return "Outdated or invalid link. Please create a new one."
     else:
-        bot.send_message(db.get_user_id(request.query["state"]), "**Authentication successsful!**", "MarkdownV2")
+        bot.send_message(db.get_user_id(request.query["state"]), "**Authentication successsful\!**", "MarkdownV2")
         db.delete_code(request.query["state"])
         return "Authentication successful."
 
