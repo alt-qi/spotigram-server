@@ -14,10 +14,11 @@ con = psycopg2.connect(**db_config)
 cur = con.cursor()
 
 def create_table() -> None:
-    try:
-        cur.execute("CREATE TABLE spotify (user_id INTEGER, code TEXT)")
-    except:
-        ...
+    try: cur.execute("CREATE TABLE spotify_tokens (user_id INTEGER, token TEXT)")
+    except: ...
+    con.commit()
+    try: cur.execute("CREATE TABLE auth (user_id INTEGER, code TEXT)")
+    except: ...
     con.commit()
 
 def code_exists(code: int) -> bool:
@@ -31,3 +32,17 @@ def delete_code(code: int) -> None:
 def get_user_id(code: int) -> int:
     cur.execute("SELECT user_id FROM auth WHERE code = %s", (code,))
     return int(cur.fetchall()[0][0])
+
+def user_token_exists(user_id: int) -> bool:
+    cur.execute("SELECT EXISTS (SELECT * FROM spotify_tokens WHERE user_id = %s)", (user_id,))
+    return cur.fetchall()[0][0]
+
+def save_spotify_token(user_id: int, auth_token: str) -> None:
+    if not user_token_exists(user_id):
+        cur.execute("INSERT INTO spotify_tokens VALUES (%s, %s)", (user_id, auth_token))
+    else:
+        cur.execute("UPDATE spotify_tokens SET token = %s WHERE user_id = %s", (auth_token, user_id))
+    con.commit()
+
+def init() -> None:
+    create_table()
