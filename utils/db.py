@@ -21,27 +21,27 @@ def create_table() -> None:
     except: ...
     con.commit()
 
-def code_exists(code: int) -> bool:
-    cur.execute("SELECT EXISTS (SELECT * FROM auth WHERE code = %s)", (code,))
+def auth_code_exists(auth_code: int) -> bool:
+    cur.execute("SELECT EXISTS (SELECT * FROM auth WHERE code = %s)", (auth_code,))
     return cur.fetchall()[0][0]
 
-def delete_code(code: int) -> None:
-    cur.execute("DELETE FROM auth WHERE code = %s", (code,))
+def delete_auth_code(auth_code: int) -> None:
+    cur.execute("DELETE FROM auth WHERE code = %s", (auth_code,))
     con.commit()
 
-def get_user_id(code: int) -> int:
-    cur.execute("SELECT user_id FROM auth WHERE code = %s", (code,))
+def get_user_id(auth_code: int) -> int:
+    cur.execute("SELECT user_id FROM auth WHERE code = %s", (auth_code,))
     return int(cur.fetchall()[0][0])
 
 def user_token_exists(user_id: int) -> bool:
     cur.execute("SELECT EXISTS (SELECT * FROM spotify_tokens WHERE user_id = %s)", (user_id,))
     return cur.fetchall()[0][0]
 
-def save_spotify_token(user_id: int, auth_token: str) -> None:
+def save_spotify_token(user_id: int, spotify_token: str) -> None:
     if not user_token_exists(user_id):
-        cur.execute("INSERT INTO spotify_tokens VALUES (%s, %s)", (user_id, auth_token))
+        cur.execute("INSERT INTO spotify_tokens VALUES (%s, %s)", (user_id, spotify_token))
     else:
-        cur.execute("UPDATE spotify_tokens SET token = %s WHERE user_id = %s", (auth_token, user_id))
+        cur.execute("UPDATE spotify_tokens SET token = %s WHERE user_id = %s", (spotify_token, user_id))
     con.commit()
 
 def init() -> None:
